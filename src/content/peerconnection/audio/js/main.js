@@ -118,10 +118,10 @@ function hangup() {
 }
 
 function gotRemoteStream(e) {
-  const range = document.getElementById("range");
-  const x = document.getElementById("X");
-  const y = document.getElementById("Y");
-  const z = document.getElementById("Z");
+  const range_elem = document.getElementById("range");
+  const stereo_pan_elem = document.getElementById("stereo_pan");
+  const pan_elem = document.getElementById("pan");
+
   if (audio2.srcObject !== e.streams[0]) {
     const remoteStream = e.streams[0]
     audio2.srcObject = remoteStream;
@@ -137,43 +137,43 @@ function gotRemoteStream(e) {
     alert('Sorry! Web Audio is not supported by this browser');
   }
 
-  // HACK (Nafis)
-  const move = function () {
-    console.log(x.value, y.value, z.value)
-    // panner.setPosition(x.value, y.value, z.value)
-    panner.pan.value = x.value / 40;
-    console.log(panner.pan.value);
-  }
-
   console.log("HERE")
-  var audioSourceNode = context.createMediaStreamSource(remoteStream);
-  // console.log(audioSource)
-  var filter = context.createBiquadFilter();
+
+  // AudioSourceNode
+  const audioSourceNode = context.createMediaStreamSource(remoteStream);
+  
+  // Filter
+  const filter = context.createBiquadFilter();
   filter.type = "lowshelf";
   filter.frequency.value = 1000;
-  filter.gain.value = range.value;
-  audioSourceNode.connect(filter);
-  // filter.connect(context.destination);
+  filter.gain.value = range_elem.value;
 
-  const panner = context.createStereoPanner();
-  move();
-  filter.connect(panner);
-  // peerInput.connect(panner);
-  // panner.connect(context.destination);
+  // StereoPanner
+  const stereo_panner = context.createStereoPanner();
+  stereo_panner.pan.value = 0
 
-  panner.connect(context.destination);
+  // Generic Panner
+  const panner = context.createPanner();
+  panner.setPosition(100, 100, 0);
 
-  console.log("END HACK")
+  // Connect the pipes
+  audioSourceNode
+    .connect(filter)
+    .connect(stereo_panner)
+    .connect(panner)
+    .connect(context.destination);
 
-
-  // audio2.srcObject = audioSourceNode;
-  range.oninput = function() {
-    filter.gain.value = range.value;
+  // User input
+  range_elem.oninput = function() {
+    filter.gain.value = range_elem.value;
   }
 
-  x.oninput = move;
-  y.oninput = move;
-  z.oninput = move;
+  stereo_pan_elem.oninput = function () {
+    // console.log(x.value, y.value, z.value)
+    // panner.setPosition(x.value, y.value, z.value)
+    stereo_panner.pan.value = stereo_pan_elem.value;
+    console.log(stereo_panner.pan.value);
+  }
 
   }
 }
