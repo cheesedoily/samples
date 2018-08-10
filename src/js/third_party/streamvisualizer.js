@@ -40,6 +40,18 @@ function StreamVisualizer(remoteStream, canvas) {
     alert('Sorry! Web Audio is not supported by this browser');
   }
 
+  // HACK (Nafis)
+  console.log("HERE")
+  var audioSource = this.context.createMediaElementSource(document.getElementById("v"));
+  console.log(audioSource)
+  var filter = this.context.createBiquadFilter();
+  console.log(filter)
+  audioSource.connect(filter);
+  console.log(audioSource)
+  filter.connect(this.context.destination);
+  console.log(filter)
+
+
   // Create a MediaStreamAudioSourceNode from the remoteStream
   this.source = this.context.createMediaStreamSource(remoteStream);
   console.log('Created Web Audio source from remote stream: ', this.source);

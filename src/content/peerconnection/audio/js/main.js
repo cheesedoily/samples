@@ -118,9 +118,63 @@ function hangup() {
 }
 
 function gotRemoteStream(e) {
+  const range = document.getElementById("range");
+  const x = document.getElementById("X");
+  const y = document.getElementById("Y");
+  const z = document.getElementById("Z");
   if (audio2.srcObject !== e.streams[0]) {
-    audio2.srcObject = e.streams[0];
+    const remoteStream = e.streams[0]
+    audio2.srcObject = remoteStream;
     console.log('Received remote stream');
+
+  let context;
+  // cope with browser differences
+  if (typeof AudioContext === 'function') {
+    context = new AudioContext();
+  } else if (typeof webkitAudioContext === 'function') {
+    context = new webkitAudioContext(); // eslint-disable-line new-cap
+  } else {
+    alert('Sorry! Web Audio is not supported by this browser');
+  }
+
+  // HACK (Nafis)
+  const move = function () {
+    console.log(x.value, y.value, z.value)
+    // panner.setPosition(x.value, y.value, z.value)
+    panner.pan.value = x.value / 40;
+    console.log(panner.pan.value);
+  }
+
+  console.log("HERE")
+  var audioSourceNode = context.createMediaStreamSource(remoteStream);
+  // console.log(audioSource)
+  var filter = context.createBiquadFilter();
+  filter.type = "lowshelf";
+  filter.frequency.value = 1000;
+  filter.gain.value = range.value;
+  audioSourceNode.connect(filter);
+  // filter.connect(context.destination);
+
+  const panner = context.createStereoPanner();
+  move();
+  filter.connect(panner);
+  // peerInput.connect(panner);
+  // panner.connect(context.destination);
+
+  panner.connect(context.destination);
+
+  console.log("END HACK")
+
+
+  // audio2.srcObject = audioSourceNode;
+  range.oninput = function() {
+    filter.gain.value = range.value;
+  }
+
+  x.oninput = move;
+  y.oninput = move;
+  z.oninput = move;
+
   }
 }
 
