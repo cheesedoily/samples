@@ -154,7 +154,7 @@ function gotRemoteStream(e) {
 
   // Generic Panner
   const panner = context.createPanner();
-  panner.setPosition(100, 100, 0);
+  panner.setPosition(100, 0, 0);
 
   // Connect the pipes
   audioSourceNode
@@ -173,6 +173,12 @@ function gotRemoteStream(e) {
     // panner.setPosition(x.value, y.value, z.value)
     stereo_panner.pan.value = stereo_pan_elem.value;
     console.log(stereo_panner.pan.value);
+  }
+
+  pan_elem.oninput = function () {
+    // Assume x = 100, but y in [-100, 100]
+    panner.setPosition(100, pan_elem.value, 0)
+    console.log(pan_elem.value)
   }
 
   }
