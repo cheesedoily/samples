@@ -332,3 +332,36 @@ window.setInterval(() => {
     lastResult = res;
   });
 }, 1000);
+
+// Party
+
+function Party() {
+  const that = this;
+  const seatConfig = SeatConfig();
+}
+
+Party.prototype.addMember = function(callback) {
+
+}
+
+Party.prototype.removeMember = function(callback) {
+
+}
+
+Party.prototype.shuffle = function(callback) {
+
+}
+
+// SeatConfig
+
+function SeatConfig() {
+  const that = this;
+
+  let seats = [];
+  // eventually change this to an enum
+  let shape = 1;
+
+}
+
+SeatConfig.prototype.setIntimacy = function(callback) {
+}
