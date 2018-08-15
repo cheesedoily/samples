@@ -355,13 +355,34 @@ Party.prototype.shuffle = function(callback) {
 // SeatConfig
 
 function SeatConfig() {
-  const that = this;
+  MIN_RADIUS = 1
+  MAX_RADIUS = 10
 
-  let seats = [];
+  this.seats = [];
   // eventually change this to an enum
-  let shape = 1;
+  this.shape = 1;
 
+  // [MIN_RADIUS, MAX_RADIUS]
+  this.radius = MIN_RADIUS
+  // [0, 100]
+  this.intimacy = 100
+
+  const that = this;
 }
 
-SeatConfig.prototype.setIntimacy = function(callback) {
+SeatConfig.prototype.setIntimacy = function(intimacy) {
+  if (intimacy >= 0 && intimacy <= 100) {
+    that.intimacy = intimacy;
+  }
+}
+
+SeatConfig.prototype.getRadius = function() {
+  // this code currently only works for circles
+  // 100 intimacy = min_radius
+  // 0 intimacy = max_radius
+  that.radius = (100-that.intimacy)/100*(MAX_RADIUS-MIN_RADIUS)+MIN_RADIUS
+}
+
+SeatConfig.prototype.addSeat = function(seat) {
+  this.seats.push(seat);
 }
